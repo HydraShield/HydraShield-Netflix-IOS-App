@@ -11,6 +11,8 @@ class CollectionViewTableViewCell: UITableViewCell {
 
     static let identifier = "CollectionViewTableViewCell"
     
+    weak var delegate: CollectionViewTableViewCellDelegate?
+    
     private var movies: [Movie] = [Movie]()
     
     private let collectionView: UICollectionView = {
@@ -65,4 +67,30 @@ extension CollectionViewTableViewCell: UICollectionViewDelegate, UICollectionVie
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return movies.count
     }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let movie = movies[indexPath.row]
+        guard let movieName = movie.original_title ?? movie.original_name else {
+            return
+        }
+        
+        APICaller.shared.getTrailer(with: movieName+"trailer"){ [weak self] result in
+            switch result{
+            case .success(let trailer):
+                let overview = "To be set"
+                guard let strongSelf = self else {
+                    return
+                }
+                let viewModel = MoviePreviewViewModel(movie: movieName, trailer: trailer, movieOverview: overview)
+                
+                self?.delegate?.collectionViewTableViewCellDidTapCell(strongSelf, viewModel: viewModel)
+            case .failure(let error):
+                print(error.localizedDescription)
+            }
+        }
+    }
+}
+
+protocol CollectionViewTableViewCellDelegate: AnyObject {
+    func collectionViewTableViewCellDidTapCell(_ cell: CollectionViewTableViewCell, viewModel: MoviePreviewViewModel)
 }

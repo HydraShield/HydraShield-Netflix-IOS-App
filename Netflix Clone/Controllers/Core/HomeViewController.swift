@@ -33,8 +33,7 @@ class HomeViewController: UIViewController {
         homeFeedTable.delegate = self
         homeFeedTable.dataSource = self
         
-        configNavbar();
-        
+        configNavbar()
         
         let heroHeaderUIView : UIView = HeroHeaderUIView(frame: CGRect(x: 0, y: 0, width: view.bounds.width ,height: 500))
         homeFeedTable.tableHeaderView = heroHeaderUIView
@@ -77,6 +76,8 @@ extension HomeViewController : UITableViewDelegate, UITableViewDataSource{
         else{
             return UITableViewCell()
         }
+        
+        cell.delegate = self
         
         switch indexPath.section{
         case Section.TredndingMovies.rawValue:
@@ -163,4 +164,15 @@ extension HomeViewController : UITableViewDelegate, UITableViewDataSource{
         navigationController?.navigationBar.transform = .init(translationX: 0, y: min(0, -offset))
     }
     
+}
+
+
+extension HomeViewController: CollectionViewTableViewCellDelegate {
+    func collectionViewTableViewCellDidTapCell(_ cell: CollectionViewTableViewCell, viewModel: MoviePreviewViewModel){
+        DispatchQueue.main.async { [weak self] in
+            let vc = MoviePreviewViewController()
+            vc.configure(with: viewModel)
+            self?.navigationController?.pushViewController(vc, animated: true)
+        }
+    }
 }
