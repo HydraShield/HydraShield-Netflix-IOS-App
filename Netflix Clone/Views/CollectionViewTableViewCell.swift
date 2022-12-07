@@ -81,7 +81,7 @@ extension CollectionViewTableViewCell: UICollectionViewDelegate, UICollectionVie
                 guard let strongSelf = self else {
                     return
                 }
-                let viewModel = MoviePreviewViewModel(movie: movieName, trailer: trailer, movieOverview: overview)
+                let viewModel = MoviePreviewViewModel(movie: movieName, trailer: trailer, movieOverview: movie.overview ?? overview)
                 
                 self?.delegate?.collectionViewTableViewCellDidTapCell(strongSelf, viewModel: viewModel)
             case .failure(let error):
